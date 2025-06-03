@@ -105,38 +105,42 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 locationListener = location -> {
-                    String velocidade ;
-                      if ( location.getAccuracy() <= limitePrecisao) {
-                        if (location.hasSpeed() && location.getSpeed() >= limiteVelocidade) {
-                            //velocidade em km por hora
-                            velocidade = String.format(Locale.US, "%.2f", (location.getSpeed() * 3.6f) );
-                        } else {
-                            velocidade = "0.00";
-                        }
-                    } else {
-                        return;
-                    }
+                    if (location.getAccuracy() > limitePrecisao) return;
 
+                    // Calcular velocidade em km/h
+                    String velocidade = (location.hasSpeed() && location.getSpeed() >= limiteVelocidade)
+                            ? String.format(Locale.US, "%.2f", location.getSpeed() * 3.6f)
+                            : "0.00";
+
+                    // Obter nível da bateria com segurança
                     BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
-                    int battery = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+                    int battery = (bm != null) ? bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) : -1;
+
+                    // Formatar data/hora
                     String dataFormatada = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("pt", "BR"))
                             .format(new Date(location.getTime()));
 
-                    String precisao = String.format(Locale.US, "%.2f", location.getAccuracy());
-                    String latitude = String.format(Locale.US, "%.6f", location.getLatitude());
-                    String longitude = String.format(Locale.US, "%.6f", location.getLongitude());
-
-                    String direcao = String.format(Locale.US, "%.2f", location.getBearing());
+                    // Formatadores e dados geográficos
+                    Locale us = Locale.US;
+                    String latitude = String.format(us, "%.6f", location.getLatitude());
+                    String longitude = String.format(us, "%.6f", location.getLongitude());
+                    String precisao = String.format(us, "%.2f", location.getAccuracy());
+                    String direcao = String.format(us, "%.2f", location.getBearing());
                     String provider = (location.getProvider() != null) ? location.getProvider() : "";
 
+                    // Endereço (geocodificação reversa)
                     String endereco = getAddress(getApplicationContext(), location);
 
+                    // Texto para exibir na tela
                     String textoGps = String.format(Locale.getDefault(),
-                            "Lat: %s, Long: %s, Hora: %s, Precisão: %s m, Velocidade: %s km/h, Direção: %s graus, Bateria: %d%% , Provedor de Localização: %s",
+                            "Lat: %s, Long: %s, Hora: %s, Precisão: %s m, Velocidade: %s km/h, Direção: %s graus, Bateria: %d%%, Provedor de Localização: %s",
                             latitude, longitude, dataFormatada, precisao, velocidade, direcao, battery, provider);
+
                     txt_dados_gps.setText(textoGps);
 
-                    webView.loadUrl(buildUrl(latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao));
+                    // URL para envio (por exemplo, para um WebView)
+                    String url = buildUrl(latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao);
+                    webView.loadUrl(url);
                 };
                 String provider = null;
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
