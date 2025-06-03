@@ -11,8 +11,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
     private LocationListener locationListener;
     private TextView txt_dados_gps;
     private static WebView webView;
+
+    private static final String PREFS_NAME = "configuracoes";
+    private static final String KEY_API = "api";
+    private static final String KEY_CODIGO_UNICO = "codigoUnico";
 
     float limiteVelocidade = 0.5f;  // m/s
     float limitePrecisao = 15.0f;   // metros
@@ -81,9 +83,7 @@ public class MainActivity extends AppCompatActivity {
         //Inicia serviço
         locationManager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        btn_dados.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, DadosActivity.class));
-        });
+        btn_dados.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, DadosActivity.class)));
         btn_iniciar.setBackgroundColor(Color.GREEN);
         btn_iniciar.setOnClickListener(v -> {
             if (btn_iniciar.getTag() ==null || !((Boolean) btn_iniciar.getTag())) {
@@ -161,17 +161,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void salvarPreferencias(String api, String codigoUnico) {
-        SharedPreferences sharedPreferences = getSharedPreferences("configuracoes", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("api", api);
-        editor.putString("codigoUnico", codigoUnico);
-        editor.apply();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        sharedPreferences.edit()
+        .putString(KEY_API, api)
+        .putString(KEY_CODIGO_UNICO, codigoUnico)
+        .apply();
     }
 
     private void carregarPreferencias() {
-        SharedPreferences sharedPreferences = getSharedPreferences("configuracoes", MODE_PRIVATE);
-        txt_api.setText(sharedPreferences.getString("api", ""));
-        txt_codigo_unico.setText(sharedPreferences.getString("codigoUnico", ""));
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        txt_api.setText(sharedPreferences.getString(KEY_API, ""));
+        txt_codigo_unico.setText(sharedPreferences.getString(KEY_CODIGO_UNICO, ""));
     }
 
     private String buildUrl(String latitude, String longitude, String velocidade, String dataFormatada, String direcao, int battery, String endereco, String provedor, String precisao)  {
