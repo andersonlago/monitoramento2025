@@ -115,21 +115,8 @@ public class MainActivity extends AppCompatActivity {
                 locationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(@NonNull Location location) {
-
-                        BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
-                        int battery = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-                        String dataFormatada = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("pt", "BR"))
-                                .format(new Date(location.getTime()));
-
-
-                        String precisao = String.format(Locale.US, "%.2f", location.getAccuracy());
-                        String latitude = String.format(Locale.US, "%.6f", location.getLatitude());
-                        String longitude = String.format(Locale.US, "%.6f", location.getLongitude());
                         String velocidade ;
-                        String direcao = String.format(Locale.US, "%.2f", location.getBearing());
-                        String provider = (location.getProvider() != null) ? location.getProvider() : "";
-
-                        if (location.hasSpeed() && location.getAccuracy() <= limitePrecisao) {
+                          if (location.hasSpeed() && location.getAccuracy() <= limitePrecisao) {
                             if (location.getSpeed() >= limiteVelocidade) {
                                 //velocidade em km por hora
                                 velocidade = String.format(Locale.US, "%.2f", (location.getSpeed() * 3.6f) );
@@ -137,8 +124,20 @@ public class MainActivity extends AppCompatActivity {
                                 velocidade = "0.00";
                             }
                         } else {
-                            velocidade = "0.00";
+                            return;
                         }
+
+                        BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
+                        int battery = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+                        String dataFormatada = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("pt", "BR"))
+                                .format(new Date(location.getTime()));
+
+                        String precisao = String.format(Locale.US, "%.2f", location.getAccuracy());
+                        String latitude = String.format(Locale.US, "%.6f", location.getLatitude());
+                        String longitude = String.format(Locale.US, "%.6f", location.getLongitude());
+
+                        String direcao = String.format(Locale.US, "%.2f", location.getBearing());
+                        String provider = (location.getProvider() != null) ? location.getProvider() : "";
 
                         String endereco = getAddress(getApplicationContext(), location);
 
