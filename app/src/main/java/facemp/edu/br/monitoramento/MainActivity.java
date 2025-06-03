@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity {
 
                 locationListener = location -> {
                     String velocidade ;
-                      if (location.hasSpeed() && location.getAccuracy() <= limitePrecisao) {
-                        if (location.getSpeed() >= limiteVelocidade) {
+                      if ( location.getAccuracy() <= limitePrecisao) {
+                        if (location.hasSpeed() && location.getSpeed() >= limiteVelocidade) {
                             //velocidade em km por hora
                             velocidade = String.format(Locale.US, "%.2f", (location.getSpeed() * 3.6f) );
                         } else {
