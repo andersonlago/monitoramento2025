@@ -1,6 +1,7 @@
 package facemp.edu.br.monitoramento;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -9,18 +10,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
@@ -28,15 +26,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Scanner;
-
-import kotlin.reflect.KFunction;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -71,28 +64,22 @@ public class MainActivity extends AppCompatActivity {
 
         carregarPreferencias();
 
-        txt_api.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                salvarPreferencias(txt_api.getText().toString(), txt_codigo_unico.getText().toString());
-                return false;
-            }
+        txt_api.setOnKeyListener((view, i, keyEvent) -> {
+            salvarPreferencias(txt_api.getText().toString(), txt_codigo_unico.getText().toString());
+            return false;
         });
 
-        txt_codigo_unico.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                salvarPreferencias(txt_api.getText().toString(), txt_codigo_unico.getText().toString());
-                return false;
-            }
+        txt_codigo_unico.setOnKeyListener((view, i, keyEvent) -> {
+            salvarPreferencias(txt_api.getText().toString(), txt_codigo_unico.getText().toString());
+            return false;
         });
 
         //Inicia serviço
         locationManager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        /*btn_dados.setOnClickListener(v -> {
+        btn_dados.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, DadosActivity.class));
-        });*/
+        });
 
         btn_iniciar.setOnClickListener(v -> {
             if (!btn_iniciar.getText().equals("PARAR")) {
@@ -112,43 +99,40 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                locationListener = new LocationListener() {
-                    @Override
-                    public void onLocationChanged(@NonNull Location location) {
-                        String velocidade ;
-                          if (location.hasSpeed() && location.getAccuracy() <= limitePrecisao) {
-                            if (location.getSpeed() >= limiteVelocidade) {
-                                //velocidade em km por hora
-                                velocidade = String.format(Locale.US, "%.2f", (location.getSpeed() * 3.6f) );
-                            } else {
-                                velocidade = "0.00";
-                            }
+                locationListener = location -> {
+                    String velocidade ;
+                      if (location.hasSpeed() && location.getAccuracy() <= limitePrecisao) {
+                        if (location.getSpeed() >= limiteVelocidade) {
+                            //velocidade em km por hora
+                            velocidade = String.format(Locale.US, "%.2f", (location.getSpeed() * 3.6f) );
                         } else {
-                            return;
+                            velocidade = "0.00";
                         }
-
-                        BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
-                        int battery = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-                        String dataFormatada = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("pt", "BR"))
-                                .format(new Date(location.getTime()));
-
-                        String precisao = String.format(Locale.US, "%.2f", location.getAccuracy());
-                        String latitude = String.format(Locale.US, "%.6f", location.getLatitude());
-                        String longitude = String.format(Locale.US, "%.6f", location.getLongitude());
-
-                        String direcao = String.format(Locale.US, "%.2f", location.getBearing());
-                        String provider = (location.getProvider() != null) ? location.getProvider() : "";
-
-                        String endereco = getAddress(getApplicationContext(), location);
-
-                        String textoGps = String.format(Locale.getDefault(),
-                                "Lat: %s, Long: %s, Hora: %s, Precisão: %s m, Velocidade: %s km/h, Direção: %s graus, Bateria: %d%% , localizacao: %s",
-                                latitude, longitude, dataFormatada, precisao, velocidade, direcao, battery, provider);
-                        txt_dados_gps.setText(textoGps);
-
-                        webView.loadUrl(buildUrl(latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao));
+                    } else {
+                        return;
                     }
-                 };
+
+                    BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
+                    int battery = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+                    String dataFormatada = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("pt", "BR"))
+                            .format(new Date(location.getTime()));
+
+                    String precisao = String.format(Locale.US, "%.2f", location.getAccuracy());
+                    String latitude = String.format(Locale.US, "%.6f", location.getLatitude());
+                    String longitude = String.format(Locale.US, "%.6f", location.getLongitude());
+
+                    String direcao = String.format(Locale.US, "%.2f", location.getBearing());
+                    String provider = (location.getProvider() != null) ? location.getProvider() : "";
+
+                    String endereco = getAddress(getApplicationContext(), location);
+
+                    String textoGps = String.format(Locale.getDefault(),
+                            "Lat: %s, Long: %s, Hora: %s, Precisão: %s m, Velocidade: %s km/h, Direção: %s graus, Bateria: %d%% , Provedor de Localização: %s",
+                            latitude, longitude, dataFormatada, precisao, velocidade, direcao, battery, provider);
+                    txt_dados_gps.setText(textoGps);
+
+                    webView.loadUrl(buildUrl(latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao));
+                };
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
                 {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 5, locationListener);
