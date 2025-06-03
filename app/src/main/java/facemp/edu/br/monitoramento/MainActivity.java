@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         String endereco = getAddress(getApplicationContext(), location);
 
                         String textoGps = String.format(Locale.getDefault(),
-                                "Lat: %s, Long: %s, Hora: %s, Precisão: %s m, Velocidade: %s km/h, Direção: %s graus, Bateria: %d%% , Provedor_dados: %s",
+                                "Lat: %s, Long: %s, Hora: %s, Precisão: %s m, Velocidade: %s km/h, Direção: %s graus, Bateria: %d%% , localizacao: %s",
                                 latitude, longitude, dataFormatada, precisao, velocidade, direcao, battery, provider);
                         txt_dados_gps.setText(textoGps);
 
