@@ -23,7 +23,7 @@
                 android:id="@+id/cd_unico"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Codigo Unico"
+                android:text="Código"
                 android:textSize="20sp" />
 
             <EditText
@@ -38,7 +38,7 @@
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="API"
+                android:text="URL"
                 android:textSize="20sp" />
 
             <EditText
@@ -46,7 +46,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="https://api.unifacemp.edu.br"
                 android:inputType="text"
                 android:text="http://gps.rf.gd/index.php" />
 

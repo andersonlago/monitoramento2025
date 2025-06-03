@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">monitoramento</string>
+    <string name="app_name">Monitora Localização</string>
+    <string name="lbl_url">URL</string>
+    <string name="lbl_codigounico">Identificador</string>
 </resources>

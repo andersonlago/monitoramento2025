@@ -10,7 +10,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -140,6 +142,29 @@ public class MainActivity extends AppCompatActivity {
 
                     // URL para envio (por exemplo, para um WebView)
                     String url = buildUrl(latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao);
+
+                    WebSettings webSettings = webView.getSettings();
+                    webSettings.setJavaScriptEnabled(true);
+                    webSettings.setUseWideViewPort(true);
+                    webSettings.setLoadWithOverviewMode(true);
+                    webSettings.setAllowFileAccess(true);
+                    webSettings.setAllowContentAccess(true);
+                    webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+                    webSettings.setBlockNetworkImage(false);
+                    webSettings.setTextZoom(100);
+                    webSettings.setSupportZoom(true);
+                    webSettings.setBuiltInZoomControls(false);
+                    webSettings.setDisplayZoomControls(false);
+                    webSettings.setDefaultTextEncodingName("UTF-8");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        webSettings.setAllowFileAccessFromFileURLs(true);
+                        webSettings.setAllowUniversalAccessFromFileURLs(true);
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                    }
+                    webSettings.setDomStorageEnabled(true);
+                    webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
                     webView.loadUrl(url);
                 };
                 String provider = null;
@@ -151,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     provider = LocationManager.PASSIVE_PROVIDER;
                 }
                     // Tempo = 30.000 ms (30 segundos), Distância = 5 metros
-                    locationManager.requestLocationUpdates(provider, 30000, 5, locationListener);
+                    locationManager.requestLocationUpdates(provider, 1000, 5, locationListener);
             }else {
                 btn_iniciar.setText("INICIAR");
                 btn_iniciar.setTag(false);
