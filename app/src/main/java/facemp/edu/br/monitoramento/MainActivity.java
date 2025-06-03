@@ -64,15 +64,19 @@ public class MainActivity extends AppCompatActivity {
 
         carregarPreferencias();
 
-        txt_api.setOnKeyListener((view, i, keyEvent) -> {
-            salvarPreferencias(txt_api.getText().toString(), txt_codigo_unico.getText().toString());
-            return false;
+
+        txt_api.setOnFocusChangeListener((view, hasFocus) -> {
+            if (!hasFocus) { // Lost focus
+                salvarPreferencias(txt_api.getText().toString(), txt_codigo_unico.getText().toString());
+            }
         });
 
-        txt_codigo_unico.setOnKeyListener((view, i, keyEvent) -> {
-            salvarPreferencias(txt_api.getText().toString(), txt_codigo_unico.getText().toString());
-            return false;
+        txt_codigo_unico.setOnFocusChangeListener((view, hasFocus) -> {
+            if (!hasFocus) { // Lost focus
+                salvarPreferencias(txt_api.getText().toString(), txt_codigo_unico.getText().toString());
+            }
         });
+
 
         //Inicia serviço
         locationManager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -80,10 +84,11 @@ public class MainActivity extends AppCompatActivity {
         btn_dados.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, DadosActivity.class));
         });
-
+        btn_iniciar.setBackgroundColor(Color.GREEN);
         btn_iniciar.setOnClickListener(v -> {
-            if (!btn_iniciar.getText().equals("PARAR")) {
+            if (btn_iniciar.getTag() ==null || !((Boolean) btn_iniciar.getTag())) {
                 btn_iniciar.setText("PARAR");
+                btn_iniciar.setTag(true);
                 btn_iniciar.setBackgroundColor(Color.RED);
 
                 if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -147,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
                     }
             }else {
                 btn_iniciar.setText("INICIAR");
+                btn_iniciar.setTag(false);
                 btn_iniciar.setBackgroundColor(Color.GREEN);
             }
         });
