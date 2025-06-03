@@ -138,18 +138,16 @@ public class MainActivity extends AppCompatActivity {
 
                     webView.loadUrl(buildUrl(latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao));
                 };
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-                {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 5, locationListener);
-                }else {
-                    if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-                        {
-                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 5, locationListener);
-                        }
-                        else {
-                            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 1, 5, locationListener);
-                        }
-                    }
+                String provider = null;
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    provider = LocationManager.GPS_PROVIDER;
+                } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    provider = LocationManager.NETWORK_PROVIDER;
+                } else {
+                    provider = LocationManager.PASSIVE_PROVIDER;
+                }
+                    // Tempo = 30.000 ms (30 segundos), Distância = 5 metros
+                    locationManager.requestLocationUpdates(provider, 30000, 5, locationListener);
             }else {
                 btn_iniciar.setText("INICIAR");
                 btn_iniciar.setTag(false);
