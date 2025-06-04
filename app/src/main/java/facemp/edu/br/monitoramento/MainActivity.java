@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // Obter nível da bateria com segurança
                     BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
-                    int battery = (bm != null) ? bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) : -1;
+                    int battery = (bm != null) ? bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) : 0;
 
                     // Formatar data/hora
                     String dataFormatada = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("pt", "BR"))
