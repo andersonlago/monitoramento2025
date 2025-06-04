@@ -33,6 +33,12 @@ public class Localiza extends Service implements LocationListener {
     public void onCreate() {
         super.onCreate();
         locationManager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+    }
+
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             provider = LocationManager.GPS_PROVIDER;
         } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
@@ -40,8 +46,12 @@ public class Localiza extends Service implements LocationListener {
         } else {
             provider = LocationManager.PASSIVE_PROVIDER;
         }
+
+
         // Tempo = 30.000 ms (30 segundos), Distância = 5 metros
-              locationManager.requestLocationUpdates(provider, 1000, 5, this);
+        locationManager.requestLocationUpdates(provider, 1000, 5, this);
+
+        return START_STICKY; // Restart service if it gets killed
     }
 
     @Override

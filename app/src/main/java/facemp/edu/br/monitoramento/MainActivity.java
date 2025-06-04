@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public static float limiteVelocidade = 0.5f;  // m/s
     public static float limitePrecisao = 15.0f;   // metros
 
-
+    Intent serviceIntent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
         carregarPreferencias();
 
+        Intent serviceIntent = new Intent(this, Localiza.class);
+        startService(serviceIntent);
 
         txt_api.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) { // Lost focus
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         //Inicia serviço
         locationManager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        btn_dados.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, DadosActivity.class)));
+        btn_dados.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, DadosNeto.class)));
         btn_iniciar.setBackgroundColor(Color.GREEN);
         btn_iniciar.setOnClickListener(v -> {
             if (btn_iniciar.getTag() ==null || !((Boolean) btn_iniciar.getTag())) {
@@ -105,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
                     // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
-                Intent serviceIntent = new Intent(this, Localiza.class);
-                startService(serviceIntent);
+
+
                 locationListener = location -> {
                     if (location.getAccuracy() > limitePrecisao) return;
 
@@ -144,6 +146,11 @@ public class MainActivity extends AppCompatActivity {
                     // URL para envio (por exemplo, para um WebView)
                     String url = buildUrl(txt_api.getText().toString(), txt_codigo_unico.getText().toString(), latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao);
                     sendData(url);
+                    DadosDao dadosDao = new DadosDao(getApplicationContext());
+                    Dados dados = new Dados( txt_codigo_unico.getText().toString(),
+                            latitude, longitude,
+                            velocidade, dataFormatada, direcao, String.valueOf(battery), endereco, provider,precisao,0,0);
+                            dadosDao.inserir(dados);
 
                 };
                 String provider = null;
@@ -160,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 btn_iniciar.setText("INICIAR");
                 btn_iniciar.setTag(false);
                 btn_iniciar.setBackgroundColor(Color.GREEN);
+                stopService( serviceIntent );
             }
         });
     }
