@@ -40,12 +40,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView txt_dados_gps;
     private static WebView webView;
 
-    private static final String PREFS_NAME = "configuracoes";
-    private static final String KEY_API = "api";
-    private static final String KEY_CODIGO_UNICO = "codigoUnico";
+    public static final String PREFS_NAME = "configuracoes";
+    public static String KEY_API = "api";
+    public static String KEY_CODIGO_UNICO = "codigoUnico";
 
-    float limiteVelocidade = 0.5f;  // m/s
-    float limitePrecisao = 15.0f;   // metros
+    public static float limiteVelocidade = 0.5f;  // m/s
+    public static float limitePrecisao = 15.0f;   // metros
 
 
     @Override
@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
                     // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
-
+                Intent serviceIntent = new Intent(this, Localiza.class);
+                startService(serviceIntent);
                 locationListener = location -> {
                     if (location.getAccuracy() > limitePrecisao) return;
 
@@ -141,31 +142,9 @@ public class MainActivity extends AppCompatActivity {
                     txt_dados_gps.setText(textoGps);
 
                     // URL para envio (por exemplo, para um WebView)
-                    String url = buildUrl(latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao);
+                    String url = buildUrl(txt_api.getText().toString(), txt_codigo_unico.getText().toString(), latitude, longitude, velocidade, dataFormatada, direcao, battery, endereco, provider, precisao);
+                    sendData(url);
 
-                    WebSettings webSettings = webView.getSettings();
-                    webSettings.setJavaScriptEnabled(true);
-                    webSettings.setUseWideViewPort(true);
-                    webSettings.setLoadWithOverviewMode(true);
-                    webSettings.setAllowFileAccess(true);
-                    webSettings.setAllowContentAccess(true);
-                    webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-                    webSettings.setBlockNetworkImage(false);
-                    webSettings.setTextZoom(100);
-                    webSettings.setSupportZoom(true);
-                    webSettings.setBuiltInZoomControls(false);
-                    webSettings.setDisplayZoomControls(false);
-                    webSettings.setDefaultTextEncodingName("UTF-8");
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        webSettings.setAllowFileAccessFromFileURLs(true);
-                        webSettings.setAllowUniversalAccessFromFileURLs(true);
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-                    }
-                    webSettings.setDomStorageEnabled(true);
-                    webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-                    webView.loadUrl(url);
                 };
                 String provider = null;
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -185,6 +164,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    public static void sendData(String url) {
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setAllowContentAccess(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setBlockNetworkImage(false);
+        webSettings.setTextZoom(100);
+        webSettings.setSupportZoom(true);
+        webSettings.setBuiltInZoomControls(false);
+        webSettings.setDisplayZoomControls(false);
+        webSettings.setDefaultTextEncodingName("UTF-8");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            webSettings.setAllowFileAccessFromFileURLs(true);
+            webSettings.setAllowUniversalAccessFromFileURLs(true);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webView.loadUrl(url);
+    }
     private void salvarPreferencias(String api, String codigoUnico) {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         sharedPreferences.edit()
@@ -199,10 +204,13 @@ public class MainActivity extends AppCompatActivity {
         txt_codigo_unico.setText(sharedPreferences.getString(KEY_CODIGO_UNICO, ""));
     }
 
-    private String buildUrl(String latitude, String longitude, String velocidade, String dataFormatada, String direcao, int battery, String endereco, String provedor, String precisao)  {
+
+
+
+    public static String buildUrl(String api, String  codigo_unico , String latitude, String longitude, String velocidade, String dataFormatada, String direcao, int battery, String endereco, String provedor, String precisao)  {
         try {
                return String.format(Locale.getDefault(), "%s?codigo_unico=%s&latitude=%s&longitude=%s&velocidade=%s&dt_hora=%s&direcao=%s&bateria=%d&endereco=%s&provedor=%s&precisao=%s",
-                    txt_api.getText().toString(), txt_codigo_unico.getText().toString(), latitude, longitude, velocidade, URLEncoder.encode(dataFormatada, "UTF-8"), direcao, battery, URLEncoder.encode(endereco, "UTF-8"), provedor,precisao);
+                    api, codigo_unico, latitude, longitude, velocidade, URLEncoder.encode(dataFormatada, "UTF-8"), direcao, battery, URLEncoder.encode(endereco, "UTF-8"), provedor,precisao);
         } catch (Exception e) {
             e.printStackTrace();
             return "";
