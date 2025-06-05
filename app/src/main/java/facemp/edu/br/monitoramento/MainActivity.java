@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
         carregarPreferencias();
 
-        Intent serviceIntent = new Intent(this, Localiza.class);
-        startService(serviceIntent);
+        //Intent serviceIntent = new Intent(this, Localiza.class);
+        //startService(serviceIntent);
 
         txt_api.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) { // Lost focus

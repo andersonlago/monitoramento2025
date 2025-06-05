@@ -2,6 +2,7 @@ package facemp.edu.br.monitoramento;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class DadosDao {
         cv.put("enviado", dados.getEnviado());
         //cv.put("id", dados.getId());
         db.insert("dados", null, cv);
+        db.close();
     }
 
     public void  atualizar(Dados dados){
@@ -45,20 +47,21 @@ public class DadosDao {
         SQLiteDatabase db = banco.getReadableDatabase();
         ArrayList<Dados> ldados = new ArrayList<>();
         String sql = "SELECT * FROM dados";
-        db.rawQuery(sql, null).moveToFirst();
-        while (db.rawQuery(sql, null).moveToNext()) {
+        Cursor c = db.rawQuery(sql, null);
+        c.moveToFirst();
+        while (c.moveToNext()) {
             Dados dados1 = new Dados();
-            dados1.setCodigo_unico(db.rawQuery(sql, null).getString(1));
-            dados1.setLatitude(db.rawQuery(sql, null).getString(2));
-            dados1.setLongitude(db.rawQuery(sql, null).getString(3));
-            dados1.setVelocidade(db.rawQuery(sql, null).getString(4));
-            dados1.setDt_hora(db.rawQuery(sql, null).getString(5));
-            dados1.setDirecao(db.rawQuery(sql, null).getString(6));
-            dados1.setBateria(db.rawQuery(sql, null).getString(7));
-            dados1.setEndereco(db.rawQuery(sql, null).getString(8));
-            dados1.setProvedor(db.rawQuery(sql, null).getString(9));
-            dados1.setPrecisao(db.rawQuery(sql, null).getString(10));
-            dados1.setEnviado(db.rawQuery(sql, null).getInt(11));
+            dados1.setCodigo_unico(c.getString(1));
+            dados1.setLatitude(c.getString(2));
+            dados1.setLongitude(c.getString(3));
+            dados1.setVelocidade(c.getString(4));
+            dados1.setDt_hora(c.getString(5));
+            dados1.setDirecao(c.getString(6));
+            dados1.setBateria(c.getString(7));
+            dados1.setEndereco(c.getString(8));
+            dados1.setProvedor(c.getString(9));
+            dados1.setPrecisao(c.getString(10));
+            dados1.setEnviado(c.getInt(11));
             ldados.add(dados1);
         }
         return ldados;
